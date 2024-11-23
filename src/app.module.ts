@@ -9,6 +9,8 @@ import { User } from './users/entities/user.entity';
 import { ReviewsModule } from './reviews/reviews.module';
 import { CloudinaryModule } from './cloudinary/cloudinary.module';
 import { Reviews } from './reviews/entities/review.entity';
+import { RestaurantsModule } from './restaurants/restaurants.module';
+import { Restaurant } from './restaurants/entities/restaurant.entity';
 
 
 
@@ -23,13 +25,13 @@ import { Reviews } from './reviews/entities/review.entity';
     username: process.env.DB_USERNAME,
     password: process.env.DB_PASSWORD,
     database: process.env.DB_NAME,
-    entities: [User, Reviews],
+    entities: [User, Reviews, Restaurant],
     synchronize: true, //cambiar en prod
     ssl:{
       rejectUnauthorized: true,
       ca:process.env.SSL_CA
     }
-  })   ,AuthModule, UsersModule, ReviewsModule, CloudinaryModule],
+  })   ,AuthModule, UsersModule, ReviewsModule, CloudinaryModule, RestaurantsModule],
   controllers: [AppController],
   providers: [AppService],
 })

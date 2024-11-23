@@ -1,5 +1,7 @@
 
-import { Column, DeleteDateColumn, Entity, PrimaryGeneratedColumn } from "typeorm"
+import { Role } from "src/auth/guard/enum/rol.enum"
+import { Reviews } from "src/reviews/entities/review.entity"
+import { Column, DeleteDateColumn, Entity, OneToMany, PrimaryGeneratedColumn } from "typeorm"
 
 
 @Entity()
@@ -19,6 +21,11 @@ export class User {
     @Column()
     password:string
 
+    @Column( {type:'enum', enum:Role, default:Role.USER})
+    role: Role;
+
+    @OneToMany(() => Reviews, review => review.user)
+    reviews: Reviews[];
 
     @DeleteDateColumn({ type: 'timestamp', nullable: true })
     delete_at: Date;

@@ -1,4 +1,6 @@
-import { Column, DeleteDateColumn, Entity, PrimaryGeneratedColumn } from "typeorm"
+import { Restaurant } from "src/restaurants/entities/restaurant.entity";
+import { User } from "src/users/entities/user.entity";
+import { Column, DeleteDateColumn, Entity, ManyToOne, PrimaryGeneratedColumn } from "typeorm"
 
 
 @Entity()
@@ -19,8 +21,13 @@ export class Reviews {
     comments:string
 
     @Column()
-    category:string
+    dishCategory:string
 
+    @ManyToOne(() => Restaurant, restaurant => restaurant.reviews)
+    restaurant: Restaurant;
+
+    @ManyToOne(() => User, user => user.reviews)
+    user: User;
 
     @DeleteDateColumn({ type: 'timestamp', nullable: true })
     delete_at: Date;
