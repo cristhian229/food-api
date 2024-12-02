@@ -22,6 +22,12 @@ export class Restaurant {
     @Column()
     category: string;
 
+    @Column({ type: 'float', nullable: true })
+    latitude: number;
+
+    @Column({ type: 'float', nullable: true })
+    longitude: number;
+
     @OneToMany(() => Reviews, review => review.restaurant)
     reviews: Reviews[];
 

@@ -1,26 +1,37 @@
-import { Injectable } from '@nestjs/common';
-import { CreateRestaurantDto } from './dto/create-restaurant.dto';
-import { UpdateRestaurantDto } from './dto/update-restaurant.dto';
+import { Injectable, InternalServerErrorException, NotFoundException } from '@nestjs/common';
+import { InjectRepository } from '@nestjs/typeorm';
+import { Restaurant } from './entities/restaurant.entity';
+import { Repository } from 'typeorm';
+import axios from 'axios';
 
 @Injectable()
 export class RestaurantsService {
-  create(createRestaurantDto: CreateRestaurantDto) {
-    return 'This action adds a new restaurant';
-  }
+  private readonly googleMapsApiKey = process.env.GOOGLE_MAPS_API_KEY;
 
-  findAll() {
-    return `This action returns all restaurants`;
-  }
+  constructor(
+    @InjectRepository(Restaurant)
+    private readonly restaurantRepository: Repository<Restaurant>,
+  ) {}
+  async getCoordinatesFromAddress(address: string): Promise<{ latitude: number, longitude: number }> {
+    const url = `https://maps.googleapis.com/maps/api/geocode/json?address=${encodeURIComponent(address)}&key=${this.googleMapsApiKey}`;
 
-  findOne(id: number) {
-    return `This action returns a #${id} restaurant`;
-  }
+    try {
+        const response = await axios.get(url);
 
-  update(id: number, updateRestaurantDto: UpdateRestaurantDto) {
-    return `This action updates a #${id} restaurant`;
-  }
+        if (response.data.status === 'OK') {
+            const location = response.data.results[0].geometry.location;
+            return { latitude: location.lat, longitude: location.lng };
+        }else if (response.data.status === 'ZERO_RESULTS') {
+        throw new NotFoundException( `No se encontró la latitud y longitud para la dirección: ${address}`) ;}
 
-  remove(id: number) {
-    return `This action removes a #${id} restaurant`;
-  }
+    } catch (error: any) {
+      if (error.response.statusCode === 404) {
+        throw new NotFoundException(error.message);
+      } else {
+        throw new InternalServerErrorException(`No se pudo obtener la latitud y longitud para la dirección: ${address}`, error.message)
+    }
+      }
+
+}
+  
 }
